@@ -2,23 +2,28 @@ import Contact from '../Contact/Contact';
 import css from './ContactList.module.css';
 import { useSelector } from 'react-redux';
 import { useDebounce } from 'use-debounce';
+import {
+  selectFilteredContacts,
+  selectLoading,
+  selectError,
+} from '../../redux/contactsSlice';
 
 export default function ContactList() {
-  const contacts = useSelector(state => state.contacts.items);
   const filter = useSelector(state => state.filters.name || '');
+  const [debouncedFilter] = useDebounce(filter, 500);
 
-  const normalizedFilter = filter.toLowerCase();
-
-  const [debouncedContacts] = useDebounce(normalizedFilter, 500);
-
-  const filteredContacts = contacts.filter(contact =>
-    contact.name?.toLowerCase().includes(debouncedContacts)
+  const contacts = useSelector(state =>
+    selectFilteredContacts(state, debouncedFilter)
   );
+  const loading = useSelector(selectLoading);
+  const error = useSelector(selectError);
 
   return (
     <ul className={css.list}>
-      {filteredContacts.map(contact => (
-        <li className={css.item} key={contact.id}>
+      {loading && <p>Loading...</p>}
+      {error && <p>Error: {error}</p>}
+      {contacts.map(contact => (
+        <li key={contact.id} className={css.item}>
           <Contact contact={contact} />
         </li>
       ))}

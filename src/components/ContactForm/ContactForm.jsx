@@ -1,20 +1,6 @@
-// import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
 import css from './ContactForm.module.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from '../../redux/contactsSlice';
-// import { nanoid } from 'nanoid';
-
-// const validationSchema = Yup.object({
-//   name: Yup.string()
-//     .min(3, 'Too short')
-//     .max(50, 'Max 50 symbols')
-//     .required('Required'),
-//   number: Yup.string()
-//     .min(3, 'Too short')
-//     .max(50, 'Max 50 symbols')
-//     .required('Required'),
-// });
+import { addContact } from '../../redux/contactsOps';
 
 export default function ContactForm() {
   const dispatch = useDispatch();
@@ -23,15 +9,15 @@ export default function ContactForm() {
   const handleSubmit = e => {
     e.preventDefault();
     const form = e.target;
-    const name = form.elements.name.value;
-    const number = form.elements.number.value;
+    const name = form.elements.name.value.trim();
+    const number = form.elements.number.value.trim();
 
     if (contacts.find(contact => contact.name === name)) {
       alert(`${name} also in your phonebook.`);
       return;
     }
 
-    dispatch(addContact(name, number));
+    dispatch(addContact({ name, number }));
     form.reset();
   };
 
@@ -52,7 +38,7 @@ export default function ContactForm() {
         required
       />
       <button className={css.button} type="submit">
-        Додати контакт
+        Add contact
       </button>
     </form>
   );
